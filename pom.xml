@@ -26,8 +26,22 @@
         <org.apache.servicecomb.version>1.0.0.B009</org.apache.servicecomb.version>
 		<pagehelper.starter.version>1.2.5</pagehelper.starter.version>
         <mapper.starter.version>2.0.3-beta1</mapper.starter.version>
-		<demo.main>com.server.edu.userservice.UserServiceApplication</demo.main>
+		
 	</properties>
+
+	<repositories>
+		<repository>
+			<id>cse1</id>
+			<url>http://maven.huaweicse.com/nexus/content/groups/public/</url>
+		</repository>
+	</repositories>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>cse1</id>
+			<url>http://maven.huaweicse.com/nexus/content/groups/public/</url>
+		</pluginRepository>
+	</pluginRepositories>
 
 	<!-- 文档上需要下面配置，但在整合mybatis时有冲突，解决方式在后面 -->
 	<!--<dependencyManagement>-->
@@ -158,64 +172,10 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>2.10</version>
-                <executions>
-                    <execution>
-                        <id>copy-dependencies</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>target/lib</outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.8</version>
-                <executions>
-                    <execution>
-                        <id>make-vm-zip</id>
-                        <phase>package</phase>
-                        <configuration>
-                        <target>
-                            <zip destfile="target/${build.finalName}.zip">
-                            <zipfileset dir="target/lib" prefix="lib" />
-                            <zipfileset dir="target" includes="*.jar" />
-                            <zipfileset dir="." includes="start.sh" />
-                            </zip>
-                        </target>
-                        </configuration>
-                            <goals>
-                                <goal>run</goal>
-                            </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>2.6</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <addClasspath>true</addClasspath>
-                            <classpathPrefix>./lib/</classpathPrefix>
-                            <mainClass>${demo.main}</mainClass>
-                        </manifest>
-                        <manifestEntries>
-                            <Class-Path>.</Class-Path>
-                        </manifestEntries>
-                    </archive>
-                </configuration>
-            </plugin>
+        	<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
         </plugins>
     </build>
 
