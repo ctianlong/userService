@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.server.edu.userservice.dao.RoleDao">
+   <select id="findRoleById" resultType="com.server.edu.userservice.entity.Role" parameterType = "java.lang.Long">
+		SELECT 
+		  ROLE_ID_           AS roleId,
+		  ROLE_NAME_		 AS roleName,
+		  DESC_              AS description,
+		  CREATE_DATE_       AS createDate,
+		  CREATE_BY_         AS createBy,
+		  LAST_UPDATE_DATE_  AS lastUpdateDate,
+		  LAST_UPDATE_BY_    AS lastUpdateBy,
+		  START_TIME_        AS startTime,
+		  END_TIME_          AS endTime,
+		  STATUS_            AS status
+		FROM
+		  role_t 
+		WHERE STATUS_ = 0 
+		  AND ROLE_ID_ = #{roleId} 
+   </select>
+   
+   <select id="findRoleByName" resultType="com.server.edu.userservice.entity.Role" parameterType = "java.lang.String">
+		SELECT 
+		  ROLE_ID_           AS roleId,
+		  ROLE_NAME_         AS roleName,
+		  DESC_              AS description,
+		  CREATE_DATE_       AS createDate,
+		  CREATE_BY_         AS createBy,
+		  LAST_UPDATE_DATE_  AS lastUpdateDate,
+		  LAST_UPDATE_BY_    AS lastUpdateBy,
+		  START_TIME_        AS startTime,
+		  END_TIME_          AS endTime,
+		  STATUS_            AS status
+		FROM
+		  role_t 
+		WHERE STATUS_ = 0 
+		  AND ROLE_NAME_ = #{roleName} 
+   </select>
+   
+   <insert id="createOrEidtRole" useGeneratedKeys="true"  keyProperty="roleId" parameterType="com.server.edu.userservice.entity.Role">
+		INSERT INTO role_t (
+		      ROLE_ID_,
+			  ROLE_NAME_,
+			  DESC_,
+			  CREATE_DATE_,
+			  CREATE_BY_,
+			  LAST_UPDATE_DATE_,
+			  LAST_UPDATE_BY_,
+			  START_TIME_,
+			  END_TIME_,
+			  STATUS_
+		) 
+		VALUES
+		  (
+		    #{roleId},
+		    #{roleName},
+		    #{description},
+		    #{createDate},
+		    #{createBy},
+		    #{lastUpdateDate},
+		    #{lastUpdateBy},
+		    #{startTime},
+		    #{endTime},
+		    #{status}
+		  ) 
+		  ON DUPLICATE KEY 
+		  UPDATE 
+		  	<if test="description != null and description != ''">
+		    	DESC_ = #{description},
+		    </if>
+		    <if test="startTime != 0l">
+		    	START_TIME_ = #{startTime} ,
+		    </if>
+		    <if test="endTime != 0l">
+		    	END_TIME_ = #{endTime} ,
+		    </if>
+		    <if test="lastUpdateDate != 0l">
+		   	 	LAST_UPDATE_DATE_ = #{lastUpdateDate},
+		    </if>
+		    <if test="lastUpdateBy != null and lastUpdateBy != ''">
+		    	LAST_UPDATE_BY_ = #{lastUpdateBy},
+		    </if>
+		    	STATUS_ = #{status} 
+	</insert>
+    
+    <delete id="deleteRole" parameterType = "java.lang.Long">
+		delete from role_t  where ROLE_ID_ = #{roleId}
+	</delete>
+	
+   <insert id="createUserGroupRoleRel"  parameterType="com.server.edu.userservice.entity.UserGroupRoleRel">
+		INSERT INTO role_group_rel_t (
+			ROLE_ID_,
+			GROUP_ID_
+			)
+			VALUES
+			(
+			#{roleId},
+			#{groupId}
+			)
+		ON DUPLICATE KEY
+		UPDATE
+		ROLE_ID_ = #{roleId} ,
+		GROUP_ID_ = #{groupId} 				    
+    </insert>
+	
+	<select id="findRoleList" resultType="com.server.edu.userservice.entity.Role" parameterType = "com.server.edu.userservice.entity.Role">
+		SELECT 
+		  ROLE_ID_           AS roleId,
+		  ROLE_NAME_         AS roleName,
+		  DESC_              AS description,
+		  CREATE_DATE_       AS createDate,
+		  CREATE_BY_         AS createBy,
+		  LAST_UPDATE_DATE_  AS lastUpdateDate,
+		  LAST_UPDATE_BY_    AS lastUpdateBy,
+		  START_TIME_        AS startTime,
+		  END_TIME_          AS endTime,
+		  STATUS_            AS status
+		FROM
+		  role_t 
+		WHERE 1 = 1
+		  AND STATUS_ = 0 
+		  <if test="roleName != null and roleName != ''">
+			and ROLE_NAME_ like concat('%',#{roleName},'%') 
+		  </if>
+		  <if test="startTime != 0l">
+				<![CDATA[
+					and START_TIME_ >= #{startTime}
+				]]>
+		  </if>
+		  <if test="endTime != 0l">
+				<![CDATA[
+					and END_TIME_ <= #{endTime}
+				]]>
+		  </if>
+		  <if test="createBy != null and createBy != ''">
+		  	and t.CREATE_BY_ = #{createBy}
+		  </if> 
+		ORDER BY ROLE_ID_	
+   </select>
+   
+   <insert id="createRoleAuthRelList"  parameterType="java.util.List">
+		INSERT INTO role_authority_rel_t (
+		  ROLE_ID_,
+		  VALUE_ID_,
+		  TYPE_
+		) 
+		VALUES
+    	<foreach collection="list" item="item" index="index" separator=",">
+    	(
+		  #{item.roleId},
+		  #{item.valueId},
+		  #{item.type}
+    	)
+    	</foreach>
+    	ON DUPLICATE KEY 
+		 UPDATE 
+		    ROLE_ID_ = values(ROLE_ID_),
+		    VALUE_ID_ = values(VALUE_ID_),
+		    TYPE_ = values(TYPE_)
+	</insert>
+	
+	<select id="getAuthRoleRelListByRoleId" resultType="com.server.edu.userservice.entity.RoleAuthorityRel" parameterType = "java.lang.Long">
+		SELECT 
+		  t.ROLE_ID_      AS roleId,
+		  t.VALUE_ID_     AS valueId,
+		  t.TYPE_         AS type
+		FROM
+		  role_authority_rel_t t 
+		WHERE  t.ROLE_ID_ = #{roleId}
+		ORDER BY t.VALUE_ID_
+	</select>
+	
+</mapper>

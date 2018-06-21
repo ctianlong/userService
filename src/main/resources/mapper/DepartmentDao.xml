@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.server.edu.userservice.dao.DepartmentDao">
+   <select id="findDeptById" resultType="com.server.edu.userservice.entity.Department" parameterType = "java.lang.Long">
+		SELECT 
+		  DEPT_ID_          AS deptId,
+		  DEPT_CODE_        AS deptCode,
+		  DEPT_NAME_        AS deptName,
+		  DESC_             AS description,
+		  PARENT_DEPT_ID_   AS parentDeptId,
+		  CREATE_BY_        AS createBy,
+		  CREATE_DATE_      AS createDate,
+		  LAST_UPDATE_BY_   AS lastUpdateBy,
+		  LAST_UPDATE_DATE_ AS lastUpdateDate
+		FROM
+		  department_t 
+		WHERE DEPT_ID_ = #{deptId} 
+   </select>
+   
+   <select id="findDeptByName" resultType="com.server.edu.userservice.entity.Department" parameterType = "java.lang.String">
+		SELECT 
+		  DEPT_ID_          AS deptId,
+		  DEPT_CODE_        AS deptCode,
+		  DEPT_NAME_        AS deptName,
+		  DESC_             AS description,
+		  PARENT_DEPT_ID_   AS parentDeptId,
+		  CREATE_BY_        AS createBy,
+		  CREATE_DATE_      AS createDate,
+		  LAST_UPDATE_BY_   AS lastUpdateBy,
+		  LAST_UPDATE_DATE_ AS lastUpdateDate
+		FROM
+		  department_t 
+		WHERE DEPT_NAME_ = #{deptName}
+   </select>
+   
+   <insert id="createOrEidtDept" useGeneratedKeys="true"  keyProperty="deptId" parameterType="com.server.edu.userservice.entity.Department">
+		INSERT INTO department_t (
+		      DEPT_ID_,
+			  DEPT_CODE_,
+			  DEPT_NAME_,
+			  DESC_,
+			  PARENT_DEPT_ID_,
+			  CREATE_BY_,
+			  CREATE_DATE_,
+			  LAST_UPDATE_BY_,
+			  LAST_UPDATE_DATE_ 
+		) 
+		VALUES
+		  (
+		    #{deptId},
+		    #{deptCode},
+		    #{deptName},
+		    #{description},
+		    #{parentDeptId},
+		    #{createBy},
+		    #{createDate},
+		    #{lastUpdateBy},
+		    #{lastUpdateDate}
+		  ) 
+		  ON DUPLICATE KEY 
+		  UPDATE 
+		  	<if test="description != null and description != ''">
+		    	DESC_ = #{description},
+		    </if>
+		    <if test="deptName != null and deptName != ''">
+		    	DEPT_NAME_ = #{deptName},
+		    </if>	
+		    LAST_UPDATE_BY_ = #{lastUpdateBy} ,	    
+		    LAST_UPDATE_DATE_ = #{lastUpdateDate} 	    
+	</insert>
+    
+    <delete id="deleteDept" parameterType = "java.lang.Long">
+		delete from department_t  where DEPT_ID_ = #{deptId}
+	</delete>
+	
+	<select id="findDetpList" resultType="com.server.edu.userservice.entity.Department" parameterType = "com.server.edu.userservice.entity.Department">
+		SELECT 
+		  DEPT_ID_          AS deptId,
+		  DEPT_CODE_        AS deptCode,
+		  DEPT_NAME_        AS deptName,
+		  DESC_             AS description,
+		  PARENT_DEPT_ID_   AS parentDeptId,
+		  CREATE_BY_        AS createBy,
+		  CREATE_DATE_      AS createDate,
+		  LAST_UPDATE_BY_   AS lastUpdateBy,
+		  LAST_UPDATE_DATE_ AS lastUpdateDate
+		FROM
+		  department_t 
+		WHERE 1 = 1
+		  <if test="deptName != null and deptName != ''">
+			and t.DEPT_NAME_ like concat('%',#{deptName},'%')
+		  </if>
+		  <if test="deptCode != null and deptCode != ''">
+			and t.DEPT_CODE_ like concat('%',#{deptCode},'%')
+		  </if>
+		  <if test="createBy != null and createBy != ''">
+		  	and t.CREATE_BY_ = #{createBy}
+		  </if> 
+		ORDER BY DEPT_ID_	
+   </select>
+  
+  <select id="findDeptChilds" resultType="com.server.edu.userservice.entity.Department"  parameterType = "java.lang.Long">
+		SELECT 
+		  DEPT_ID_          AS deptId,
+		  DEPT_CODE_        AS deptCode,
+		  DEPT_NAME_        AS deptName,
+		  DESC_             AS description,
+		  PARENT_DEPT_ID_   AS parentDeptId,
+		  CREATE_BY_        AS createBy,
+		  CREATE_DATE_      AS createDate,
+		  LAST_UPDATE_BY_   AS lastUpdateBy,
+		  LAST_UPDATE_DATE_ AS lastUpdateDate
+		FROM
+		  department_t 
+		WHERE 1 = 1
+		  and PARENT_DEPT_ID_ =  #{parentDeptId}
+		ORDER BY DEPT_ID_	
+   </select>
+</mapper>

@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.server.edu.userservice.dao.AuthorityMenuDao">
+
+	<!-- 根据主键id查询权限信息 -->
+	<select id="getAuthorityMenuById" resultType="com.server.edu.userservice.entity.AuthorityMenu"
+		parameterType="java.lang.Long">
+		select
+		t.AUTH_ID_ AS authId,
+		t.AUTH_NAME_EN_ AS
+		authNameEn,
+		t.AUTH_NAME_CH_ AS authNameCh,
+		t.PARENT_AUTH_ID_ AS
+		parentAuthId,
+		t.URL_ AS urlPath,
+		t.AUTH_CODE_ AS authCode,
+		t.TYPE_ AS type,
+		t.ORDER_ AS orderNo,
+		t.APPLICATION_ AS application
+		from authority_menu_t
+		t
+		where t.AUTH_ID_ = #{authId,jdbcType=BIGINT}
+	</select>
+
+	<!-- 查询权限列表 -->
+	<select id="findAuthorityMenuList" resultType="com.server.edu.userservice.entity.AuthorityMenu"
+		parameterType="com.server.edu.userservice.entity.AuthorityMenu">
+		SELECT
+		t.AUTH_ID_ AS authId,
+		t.AUTH_NAME_EN_ AS authNameEn,
+		t.AUTH_NAME_CH_ AS authNameCh,
+		t.PARENT_AUTH_ID_ AS parentAuthId,
+		t.URL_ AS urlPath,
+		t.AUTH_CODE_ AS authCode,
+		t.TYPE_ AS type,
+		t.ORDER_ AS
+		orderNo,
+		t.APPLICATION_ AS application
+		FROM
+		authority_menu_t t
+		WHERE 1 = 1
+		<if test="authNameEn != null and authNameEn != ''">
+			AND AUTH_NAME_EN_ = #{authNameEn,jdbcType=VARCHAR}
+		</if>
+		<if test="authNameCh != null and authNameCh != ''">
+			AND AUTH_NAME_CH_ = #{authNameCh,jdbcType=VARCHAR}
+		</if>
+		<if test="parentAuthId != null and parentAuthId != ''">
+			AND PARENT_AUTH_ID_ = #{parentAuthId,jdbcType=BIGINT}
+		</if>
+		<if test="urlPath != null and urlPath != ''">
+			AND URL_ = #{urlPath,jdbcType=VARCHAR}
+		</if>
+		<if test="authCode != null and authCode != ''">
+			AND AUTH_CODE_ = #{authCode,jdbcType=VARCHAR}
+		</if>
+		<if test="type != null and type != ''">
+			AND TYPE_ = #{type,jdbcType=VARCHAR}
+		</if>
+		<if test="orderNo != null and orderNo != ''">
+			AND ORDER_ = #{orderNo,jdbcType=BIGINT}
+		</if>
+		<if test="application != null and application != ''">
+			AND APPLICATION_ = #{application,jdbcType=VARCHAR}
+		</if>
+	</select>
+	
+	<!-- 根据权限名称查询权限信息 -->
+	<select id="findAuthorityMenuByName" resultType="com.server.edu.userservice.entity.AuthorityMenu" parameterType = "java.lang.String">
+		select
+		t.AUTH_ID_        AS authId,
+		t.AUTH_NAME_EN_   AS authNameEn,
+		t.AUTH_NAME_CH_   AS authNameCh,
+		t.PARENT_AUTH_ID_ AS parentAuthId,
+		t.URL_            AS urlPath,
+		t.AUTH_CODE_      AS authCode,
+		t.TYPE_           AS type,
+		t.ORDER_          AS orderNo,
+		t.APPLICATION_    AS application
+		from authority_menu_t t
+		WHERE t.AUTH_NAME_EN_ = #{auth_name_en,jdbcType=VARCHAR}
+	</select>
+	
+	<!-- 增加权限 -->
+	<insert id="createAuthorityMenu" parameterType="com.server.edu.userservice.entity.AuthorityMenu">
+		INSERT INTO
+		authority_menu_t (
+		AUTH_ID_,
+		AUTH_NAME_EN_,
+		AUTH_NAME_CH_,
+		PARENT_AUTH_ID_,
+		URL_,
+		AUTH_CODE_,
+		TYPE_,
+		ORDER_,
+		APPLICATION_
+		)
+		values (
+		#{authId,jdbcType=BIGINT},
+		#{authNameEn,jdbcType=VARCHAR},
+		#{authNameCh,jdbcType=VARCHAR},
+		#{parentAuthId,jdbcType=BIGINT},
+		#{urlPath,jdbcType=VARCHAR},
+		#{authCode,jdbcType=VARCHAR},
+		#{type,jdbcType=VARCHAR},
+		#{orderNo,jdbcType=BIGINT},
+		#{application,jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<!-- 更新权限 -->
+	<update id="updateAuthorityMenu" parameterType="com.server.edu.userservice.entity.AuthorityMenu">
+		update authority_menu_t
+		<set>
+			<if test="authNameEn != null and authNameEn != ''">
+				AUTH_NAME_EN_ = #{authNameEn,jdbcType=VARCHAR},
+			</if>
+			<if test="authNameCh != null and authNameCh != ''">
+				AUTH_NAME_CH_ = #{authNameCh,jdbcType=VARCHAR},
+			</if>
+			<if test="parentAuthId != null and parentAuthId != ''">
+				PARENT_AUTH_ID_ = #{parentAuthId,jdbcType=BIGINT},
+			</if>
+			<if test="urlPath != null and urlPath != ''">
+				URL_ = #{urlPath,jdbcType=VARCHAR},
+			</if>
+			<if test="authCode != null and authCode != ''">
+				AUTH_CODE_ = #{authCode,jdbcType=VARCHAR},
+			</if>
+			<if test="type != null and type != ''">
+				TYPE_ = #{type,jdbcType=VARCHAR},
+			</if>
+			<if test="orderNo != null and orderNo != ''">
+				ORDER_ = #{orderNo,jdbcType=BIGINT},
+			</if>
+			<if test="application != null and application != ''">
+				APPLICATION_ = #{application,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where AUTH_ID_ = #{authId,jdbcType=BIGINT}
+	</update>
+
+	<!-- 删除权限 -->
+	<delete id="deleteAuthorityMenu" parameterType="java.lang.Long">
+		delete from
+		authority_menu_t where AUTH_ID_ = #{authId}
+	</delete>
+
+	<!-- 查询角色权限关联列表 -->
+	<select id="findRoleAuthorityRelList" resultType="com.server.edu.userservice.entity.RoleAuthorityRel"
+		parameterType="com.server.edu.userservice.entity.RoleAuthorityRel">
+		SELECT
+		t.ROLE_ID_ AS roleId,
+		t.VALUE_ID_ AS valueId,
+		t.TYPE_ AS type
+		FROM
+		role_authority_rel_t t
+		WHERE 1 = 1
+		<if test="roleId != null and roleId != ''">
+			AND t.ROLE_ID_ = #{roleId,jdbcType=BIGINT}
+		</if>
+		<if test="valueId != null and valueId != ''">
+			AND t.VALUE_ID_ = #{valueId,jdbcType=BIGINT}
+		</if>
+		<if test="type != null and type != ''">
+			AND t.TYPE_ = #{type,jdbcType=VARCHAR}
+		</if>
+	</select>
+
+	<!-- 查询权限列表 -->
+	<select id="findAuthorityMenuListByRoleId" resultType="com.server.edu.userservice.entity.AuthorityMenu"
+		parameterType="java.util.HashMap">
+		SELECT
+		t.AUTH_ID_ AS authId,
+		t.AUTH_NAME_EN_ AS
+		authNameEn,
+		t.AUTH_NAME_CH_ AS authNameCh,
+		t.PARENT_AUTH_ID_ AS
+		parentAuthId,
+		t.URL_ AS urlPath,
+		t.AUTH_CODE_ AS authCode,
+		t.TYPE_ AS type,
+		t.ORDER_ AS orderNo,
+		t.APPLICATION_ AS application
+		FROM
+		authority_menu_t
+		t left join role_authority_rel_t m on t.AUTH_ID_ = m.VALUE_ID_
+		where
+		t.TYPE_ = #{type,jdbcType=INTEGER}
+		AND t.PARENT_AUTH_ID_ =
+		#{parentAuthId,jdbcType=BIGINT}
+		AND m.ROLE_ID_ =
+		#{roleId,jdbcType=BIGINT}
+	</select>
+
+	<!-- 新增角色权限关系数据 -->
+	<insert id="addRoleAuthorityRel" parameterType="com.server.edu.userservice.entity.RoleAuthorityRel">
+		INSERT INTO
+		role_authority_rel_t (
+		ROLE_ID_,
+		VALUE_ID_,
+		TYPE_
+		)
+		VALUES
+		(
+		#{roleId},
+		#{valueId},
+		#{type}
+		)
+	</insert>
+
+	<!-- 删除角色权限关系数据 -->
+	<delete id="deleteRoleAuthorityRel" parameterType="com.server.edu.userservice.entity.RoleAuthorityRel">
+		delete from role_authority_rel_t
+		<where>
+			1=1
+			<if test="roleId!=null and roleId!=''">
+				AND ROLE_ID_ = #{roleId}
+			</if>
+			<if test="valueId!=null and valueId!=''">
+				AND VALUE_ID_ = #{valueId}
+			</if>
+		</where>
+	</delete>
+	
+	<!-- 查询用户的角色权限（菜单权限或者部门权限） -->
+	<select id="findAuthMenuByUserId" resultType="java.lang.Long" parameterType="java.util.Map">
+			SELECT 
+			  VALUE_ID_ 
+			FROM
+			  role_authority_rel_t 
+			WHERE ROLE_ID_ IN 
+			  (SELECT 
+			    rol.ROLE_ID_ 
+			  FROM
+			    role_t rol,
+			    role_group_rel_t rrel 
+			  WHERE rol.ROLE_ID_ = rrel.ROLE_ID_ 
+			    AND rol.STATUS_ = 0 
+			    AND rrel.GROUP_ID_ IN 
+			    (SELECT 
+			      gro.GROUP_ID_ 
+			    FROM
+			      user_group_t gro,
+			      user_group_rel_t urel 
+			    WHERE urel.USER_ID_ = #{userId}
+			      AND gro.STATUS_ = 0 
+			      AND gro.GROUP_ID_ = urel.GROUP_ID_)) 
+			  AND TYPE_ = #{type}
+	</select>
+</mapper>

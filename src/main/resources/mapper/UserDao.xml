@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.server.edu.userservice.dao.UserDao">
+    <select id="getUsers" resultType="com.server.edu.userservice.entity.User">
+        SELECT
+			t.user_id    AS userId,
+			t.user_name  AS userName
+		FROM
+			user_t t
+    </select>
+
+
+    <select id="findUserByUserId" resultType="com.server.edu.userservice.entity.User" parameterType="java.lang.Long">
+        SELECT 
+		  t.id               AS id,
+		  t.user_id          AS userId,
+		  t.user_name        AS userName,
+		  t.real_name        AS realName,
+		  t.address          AS address,
+		  t.alia_name        AS aliaName,
+		  t.head_port_rait   AS headPortRait,
+		  t.sex              AS sex,
+		  t.telephone        AS telephone,
+		  t.identity         AS identity,
+		  t.birthday         AS birthday,
+		  t.email            AS email,
+		  t.status           AS status,
+		  t.remarks          AS remarks,
+		  t.create_date      AS createDate,
+		  t.create_by        AS createBy,
+		  t.last_update_date AS lastUpdateDate,
+		  t.last_update_by   AS lastUpdateBy 
+		FROM
+		  user_t t 
+		WHERE t.user_id = #{userId}
+    </select>
+
+	<update id="updateUser"  parameterType="com.server.edu.userservice.entity.User">
+		UPDATE 
+		  user_t t 
+		<!-- trim prefix="set" suffixOverrides=","> -->
+		<set>
+			<if test="userName != null and userName != ''">
+			  	t.real_name = #{userName},
+			</if>
+			<if test="realName != null and realName != ''">
+			  	t.real_name = #{realName},
+			</if>
+			<if test="address != null and address != ''">
+			  	t.address = #{address},
+			</if>
+			<if test="aliaName != null and aliaName != ''">
+			  	t.alia_name = #{aliaName},
+			</if>
+			<if test="headPortRait != null and headPortRait != ''">
+			  	t.head_port_rait = #{headPortRait},
+			</if>
+			<if test="sex != 0">
+			  	t.sex = #{sex},
+			</if>
+			<if test="telephone != 0L">
+			  	t.telephone = #{telephone},
+			</if>
+			<if test="identity != null and identity != ''">
+			  	t.identity = #{identity},
+			</if>
+			<if test="birthday != 0L">
+			  	t.birthday = #{birthday},
+			</if>
+			<if test="email != null and email != ''">
+			  	t.email = #{email},
+			</if>
+			<if test="remarks != null and remarks != ''">
+			  	t.remarks = #{remarks},
+			</if>
+			<if test="lastUpdateDate = 0L">
+			  	t.last_update_date = #{lastUpdateDate},
+			</if>
+			<if test="lastUpdateBy != null and lastUpdateBy != ''">
+			  	t.last_update_by = #{lastUpdateBy},
+			</if>
+ 		</set>
+		WHERE t.user_id = #{userId}
+	</update>
+	
+	
+	<select id="findUserList" resultType="com.server.edu.userservice.entity.User">
+        SELECT 
+		  t.id               AS id,
+		  t.user_id          AS userId,
+		  t.user_name        AS userName,
+		  t.real_name        AS realName,
+		  t.address          AS address,
+		  t.alia_name        AS aliaName,
+		  t.head_port_rait   AS headPortRait,
+		  t.sex              AS sex,
+		  t.telephone        AS telephone,
+		  t.identity         AS identity,
+		  t.birthday         AS birthday,
+		  t.email            AS email,
+		  t.status           AS status,
+		  t.remarks          AS remarks,
+		  t.create_date      AS createDate,
+		  t.create_by        AS createBy,
+		  t.last_update_date AS lastUpdateDate,
+		  t.last_update_by   AS lastUpdateBy 
+		FROM
+		  user_t t 
+    </select>
+    
+
+</mapper>

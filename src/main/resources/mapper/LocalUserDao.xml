@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.server.edu.userservice.dao.LocalUserDao">
+	<!-- 查询权限列表 -->
+	<select id="findLocalUserListByDeptId" resultType="com.server.edu.userservice.entity.LocalUser"
+		parameterType="java.lang.Long">
+		SELECT
+		USER_ID_ AS userId,
+		USER_NAME_ AS userName,
+		USER_PWD_ AS userPwd,
+		EMAIL_ AS email,
+		MOBILE_PHONE_ AS mobilePhone,
+		CREATE_BY_ AS createBy,
+		CREATE_DATE_ AS createDate,
+		LAST_UPDATE_BY_ AS
+		lastUpdateBy,
+		LAST_UPDATE_DATE_ AS lastUpdateDate,
+		COMMENT_ AS comment
+		FROM
+		local_user t left join local_user_dept m on t.userId = m.userId
+		WHERE m.DEPT_ID_ = #{deptId,jdbcType=BIGINT}
+	</select>
+
+	<!-- 根据主键id查询权限信息 -->
+	<select id="getLocalUserById" resultType="com.server.edu.userservice.entity.LocalUser"
+		parameterType="java.lang.Long">
+		select
+		USER_ID_ AS userId,
+		USER_NAME_ AS userName,
+		USER_PWD_ AS userPwd,
+		EMAIL_ AS email,
+		MOBILE_PHONE_ AS mobilePhone,
+		CREATE_BY_ AS createBy,
+		CREATE_DATE_ AS createDate,
+		LAST_UPDATE_BY_ AS
+		lastUpdateBy,
+		LAST_UPDATE_DATE_ AS lastUpdateDate,
+		COMMENT_ AS comment
+		from
+		local_user t
+		where t.USER_ID_ = #{userId,jdbcType=BIGINT}
+	</select>
+
+	<!-- 增加权限 -->
+	<insert id="createLocalUser" parameterType="com.server.edu.userservice.entity.LocalUser">
+		INSERT INTO
+		local_user (
+		USER_ID_,
+		USER_NAME_,
+		USER_PWD_,
+		EMAIL_,
+		MOBILE_PHONE_,
+		CREATE_BY_,
+		CREATE_DATE_,
+		LAST_UPDATE_BY_,
+		LAST_UPDATE_DATE_,
+		COMMENT_)
+		values (
+		#{userId,jdbcType=BIGINT},
+		#{userName,jdbcType=VARCHAR},
+		#{userPwd,jdbcType=VARCHAR},
+		#{email,jdbcType=VARCHAR},
+		#{mobilePhone,jdbcType=VARCHAR},
+		#{createBy,jdbcType=VARCHAR},
+		#{createDate,jdbcType=BIGINT},
+		#{lastUpdateBy,jdbcType=VARCHAR},
+		#{lastUpdateDate,jdbcType=BIGINT},
+		#{comment,jdbcType=VARCHAR})
+	</insert>
+
+	<!-- 更新权限 -->
+	<update id="updateLocalUser" parameterType="com.server.edu.userservice.entity.LocalUser">
+		update local_user
+		<set>
+			<if test="userName != null and userName != ''">
+				USER_NAME_ = #{userName,jdbcType=VARCHAR},
+			</if>
+			<if test="userPwd != null and userPwd != ''">
+				USER_PWD_ = #{userPwd,jdbcType=VARCHAR},
+			</if>
+			<if test="email != null and email != ''">
+				EMAIL_ = #{email,jdbcType=VARCHAR},
+			</if>
+			<if test="mobilePhone != null and mobilePhone != ''">
+				MOBILE_PHONE_ = #{mobilePhone,jdbcType=VARCHAR},
+			</if>
+			<if test="createBy != null and createBy != ''">
+				CREATE_BY_ = #{createBy,jdbcType=VARCHAR},
+			</if>
+			<if test="createDate != null and createDate != ''">
+				CREATE_DATE_ = #{createDate,jdbcType=BIGINT},
+			</if>
+			<if test="lastUpdateBy != null and lastUpdateBy != ''">
+				LAST_UPDATE_BY_ = #{lastUpdateBy,jdbcType=VARCHAR},
+			</if>
+			<if test="lastUpdateDate != null and lastUpdateDate != ''">
+				LAST_UPDATE_DATE_ = #{lastUpdateDate,jdbcType=BIGINT},
+			</if>
+			<if test="comment != null and comment != ''">
+				COMMENT_ = #{comment,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where USER_ID_ = #{userId,jdbcType=BIGINT}
+	</update>
+
+	<!-- 删除权限 -->
+	<delete id="deleteLocalUser" parameterType="java.lang.Long">
+		delete from
+		local_user where USER_ID_ = #{userId}
+	</delete>
+
+	<!-- 根据本地用户名称查询本地用户信息 -->
+	<select id="findLocalUserByName" resultType="com.server.edu.userservice.entity.LocalUser"
+		parameterType="java.lang.String">
+		select
+		USER_ID_ AS userId,
+		USER_NAME_ AS userName,
+		USER_PWD_ AS userPwd,
+		EMAIL_ AS email,
+		MOBILE_PHONE_ AS mobilePhone,
+		CREATE_BY_ AS createBy,
+		CREATE_DATE_ AS createDate,
+		LAST_UPDATE_BY_ AS
+		lastUpdateBy,
+		LAST_UPDATE_DATE_ AS lastUpdateDate,
+		COMMENT_ AS comment
+		from local_user t
+		WHERE t.USER_NAME_ = #{userName,jdbcType=VARCHAR}
+	</select>
+
+	<!-- 本地用户批量新增部门 -->
+	<insert id="createUserDeptList" parameterType="java.util.List">
+		INSERT INTO local_user_dept (
+		USER_ID_,
+		DEPT_ID_
+		)
+		VALUES
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(
+			#{item.userId},
+			#{item.deptId}
+			)
+		</foreach>
+		ON DUPLICATE KEY
+		UPDATE
+		USER_ID_ = values(USER_ID_),
+		DEPT_ID_ = values(DEPT_ID_)
+	</insert>
+</mapper>

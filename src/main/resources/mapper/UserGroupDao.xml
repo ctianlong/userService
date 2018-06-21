@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.server.edu.userservice.dao.UserGroupDao">
+	<insert id="createOrEditGroup" useGeneratedKeys="true"  keyProperty="groupId" parameterType="com.server.edu.userservice.entity.UserGroup">
+		INSERT INTO user_group_t (
+		  GROUP_ID_,
+		  GROUP_NAME_,
+		  CREATE_DATE_,
+		  CREATE_BY_,
+		  DESC_,
+		  STATUS_
+		) 
+		VALUES
+		  (
+		    #{groupId},
+		    #{groupName},
+		    #{createDate},
+		    #{createBy},
+		    #{description},
+		    #{status}
+		  ) 
+		  ON DUPLICATE KEY 
+		  UPDATE 
+		  	<if test="description != null and description != ''">
+		    	DESC_ = #{description},
+		    </if>
+		    STATUS_ = #{status} 
+	</insert>
+	
+	<select id="findGroupById" resultType="com.server.edu.userservice.entity.UserGroup" parameterType = "java.lang.Long">
+		SELECT 
+		  t.GROUP_ID_     AS groupId,
+		  t.GROUP_NAME_   AS groupName,
+		  t.CREATE_DATE_  AS createDate,
+		  t.CREATE_BY_    AS createBy,
+		  t.DESC_         AS description,
+		  t.STATUS_       AS status
+		FROM
+		  user_group_t t 
+		WHERE t.GROUP_ID_ = #{groupId}
+		  AND t.STATUS_ = 0  
+	</select>
+	
+	<select id="findGroupByName" resultType="com.server.edu.userservice.entity.UserGroup" parameterType = "java.lang.String">
+		SELECT 
+		  t.GROUP_ID_     AS groupId,
+		  t.GROUP_NAME_   AS groupName,
+		  t.CREATE_DATE_  AS createDate,
+		  t.CREATE_BY_    AS createBy,
+		  t.DESC_         AS description,
+		  t.STATUS_       AS status
+		FROM
+		  user_group_t t 
+		WHERE t.GROUP_NAME_ = #{groupName}
+		  AND t.STATUS_ = 0  
+	</select>
+	
+	<insert id="createUserGroupRel"  parameterType="com.server.edu.userservice.entity.UserGroupRel">
+		INSERT INTO user_group_rel_t (
+		  USER_ID_,
+		  GROUP_ID_
+		) 
+		VALUES
+		  (
+		    #{userId},
+		    #{groupId}
+		  ) 
+		  ON DUPLICATE KEY 
+		  UPDATE 
+		    USER_ID_ = #{userId} ,
+		    GROUP_ID_ = #{groupId}
+	</insert>
+	
+	
+	<select id="findUserGroupList" resultType="com.server.edu.userservice.entity.UserGroup" parameterType = "com.server.edu.userservice.entity.UserGroup">
+		SELECT 
+		  t.GROUP_ID_     AS groupId,
+		  t.GROUP_NAME_   AS groupName,
+		  t.CREATE_DATE_  AS createDate,
+		  t.CREATE_BY_    AS createBy,
+		  t.DESC_         AS description,
+		  t.STATUS_       AS status
+		FROM
+		  user_group_t t 
+		WHERE 1 = 1
+		AND t.STATUS_ = 0 
+	 	<if test="groupName != null and groupName != ''">
+			and t.GROUP_NAME_ like concat('%',#{groupName},'%')
+		</if>
+		<if test="createBy != null and createBy != ''">
+		  	and t.CREATE_BY_ = #{createBy}
+		</if> 
+		ORDER BY GROUP_ID_	
+	</select>
+	
+	<insert id="createUserGroupRelList"  parameterType="java.util.List">
+		INSERT INTO user_group_rel_t (
+		  USER_ID_,
+		  GROUP_ID_,
+		  USER_TYPE_
+		) 
+		VALUES
+    	<foreach collection="list" item="item" index="index" separator=",">
+    	(
+		  #{item.userId},
+		  #{item.groupId}
+		  #{item.userType}
+    	)
+    	</foreach>
+    	ON DUPLICATE KEY 
+		 UPDATE 
+		    USER_ID_ = values(USER_ID_),
+		    GROUP_ID_ = values(GROUP_ID_),
+		    USER_TYPE_ = values(USER_TYPE_)
+	</insert>
+	
+	<delete id="deleteGroup" parameterType = "java.lang.Long">
+		delete from user_group_t  where GROUP_ID_ = #{groupId}
+	</delete>
+	
+	<insert id="createRoleGroupRelList"  parameterType="java.util.List">
+		INSERT INTO role_group_rel_t (
+		  ROLE_ID_,
+		  GROUP_ID_
+		) 
+		VALUES
+    	<foreach collection="list" item="item" index="index" separator=",">
+    	(
+		  #{item.roleId},
+		  #{item.groupId}
+    	)
+    	</foreach>
+    	ON DUPLICATE KEY 
+		 UPDATE 
+		    ROLE_ID_ = values(ROLE_ID_),
+		    GROUP_ID_ = values(GROUP_ID_)
+	</insert>
+	
+	<select id="getUserRelListByGroupId" resultType="com.server.edu.userservice.entity.UserGroupRel" parameterType = "java.lang.Long">
+		SELECT 
+		  t.USER_ID_      AS userId,
+		  t.GROUP_ID_     AS groupId,
+		  t.USER_TYPE_    AS userType
+		FROM
+		  user_group_rel_t t 
+		WHERE t.GROUP_ID_ = #{groupId}
+		ORDER BY t.USER_ID_
+	</select>
+	
+	<select id="getRoleRelListByGroupId" resultType="com.server.edu.userservice.entity.UserGroupRoleRel" parameterType = "java.lang.Long">
+		SELECT 
+		  t.ROLE_ID_      AS roleId,
+		  t.GROUP_ID_     AS groupId
+		FROM
+		  role_group_rel_t t 
+		WHERE  t.GROUP_ID_ = #{groupId}
+		ORDER BY t.ROLE_ID_
+	</select>
+	
+</mapper>
